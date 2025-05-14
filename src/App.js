@@ -9,7 +9,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/projectTimeline" element={<ProjectTimeline />} />
+          <Route path="/projectTimeline/:projectHash" element={<ProjectTimeline />} />
         </Routes>
       </Router>
     </ThemeProvider>

@@ -1,40 +1,88 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, TextField, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+// import api from "../Hooks/api";
+import { useParams } from "react-router-dom";
+import { ProjectNotFound } from "../Components/ProjectNotFound";
+import api from "../hooks/Api";
 
 const ProjectTimeline = () => {
-  const [updates, setUpdates] = useState([
-    {
-      id: 1,
-      date: "May 7, 2025 at 10:30 AM",
-      text: "Project kickoff meeting completed. Initial requirements gathered and team roles assigned.Project kickoff meeting completed. Initial requirements gathered and team roles assigned.Project kickoff meeting completed. Initial requirements gathered and team roles assigned.Project kickoff meeting completed. Initial requirements gathered and team roles assigned.Project kickoff meeting completed. Initial requirements gathered and team roles assigned.Project kickoff meeting completed. Initial requirements gathered and team roles assigned.Project kickoff meeting completed. Initial requirements gathered and team roles assigned.",
-      author: "Sarah Johnson",
-    },
-    {
-      id: 2,
-      date: "May 6, 2025 at 3:15 PM",
-      text: "Design mockups for homepage completed and sent for review. Awaiting client feedback.",
-      author: "Michael Chen",
-    },
-    {
-      id: 3,
-      date: "May 5, 2025 at 11:45 AM",
-      text: "Database schema finalized. Backend development started with API endpoints planning.",
-      author: "Alex Rodriguez",
-    },
-    {
-      id: 4,
-      date: "May 2, 2025 at 2:00 PM",
-      text: "User stories prioritized and added to sprint backlog. First sprint planning completed.",
-      author: "Taylor Wilson",
-    },
-  ]);
   const [showForm, setShowForm] = useState(false);
   const [updateText, setUpdateText] = useState("");
   const [author, setAuthor] = useState("");
+  const [project, setProject] = useState(null);
+  const [isError, setIsError] = useState(false);
+  const { projectHash } = useParams();
+
+  const dummyData = {
+    name: "Test Project",
+    description: "A test project of the description here",
+    start_date: "2025-01-01T00:00:00.000Z",
+    end_date: "2025-12-31T00:00:00.000Z",
+    status_updates: [
+      {
+        _id: "...",
+        title: "Project started",
+        description: "Initial setup completed",
+        status: "in_progress",
+        progress_percentage: 20,
+        posted_by: "John Doe",
+        created_at: "2025-05-13T12:45:00.221Z",
+      },
+      {
+        _id: "...",
+        title: "Project started",
+        description: "Initial setup completed",
+        status: "in_progress",
+        progress_percentage: 20,
+        posted_by: "John Doe",
+        created_at: "2025-05-13T12:45:00.221Z",
+      },
+      {
+        _id: "...",
+        title: "Project started",
+        description: "Initial setup completed",
+        status: "in_progress",
+        progress_percentage: 20,
+        posted_by: "John Doe",
+        created_at: "2025-05-13T12:45:00.221Z",
+      },
+      {
+        _id: "...",
+        title: "Project started",
+        description: "Initial setup completed",
+        status: "in_progress",
+        progress_percentage: 20,
+        posted_by: "John Doe",
+        created_at: "2025-05-13T12:45:00.221Z",
+      },
+    ],
+    total_updates: 3,
+    latest_status: {
+      status: "in_progress",
+      progress_percentage: 20,
+      created_at: "2025-05-13T12:45:00.221Z",
+    },
+  };
+
+  useEffect(() => {
+    fetchProjectTimeline();
+  }, []);
+
+  // Call the getProjectTimeline method
+  const fetchProjectTimeline = async () => {
+    try {
+      const timelineData = await api.getProjectTimeline(projectHash);
+      console.log(timelineData);
+    } catch (error) {
+      // setProject(dummyData);
+      setIsError(error);
+      console.error("Error fetching project timeline:", error);
+    }
+  };
 
   const handleAddUpdate = () => {
     const now = new Date();
@@ -54,11 +102,14 @@ const ProjectTimeline = () => {
       author,
     };
 
-    setUpdates([newUpdate, ...updates]);
     setUpdateText("");
     setAuthor("");
     setShowForm(false);
   };
+
+  if (isError) {
+    return <ProjectNotFound />;
+  }
 
   return (
     <Paper
@@ -74,10 +125,12 @@ const ProjectTimeline = () => {
       <Typography
         sx={{ color: "#1f2937", fontSize: "1.875rem", fontWeight: 700 }}
       >
-        Project Timeline
+        {project?.name ? project?.name : "Project Timeline"}
       </Typography>
       <Typography gutterBottom sx={{ color: "#4b5563", fontSize: "16px" }}>
-        Real-time updates on your project's progress
+        {project?.description
+          ? project?.description
+          : "Real-time updates on your project's progress"}
       </Typography>
 
       {/* future use */}
@@ -140,7 +193,7 @@ const ProjectTimeline = () => {
       )}
 
       <Box sx={{ mt: "16px" }}>
-        {updates.map((update) => (
+        {project?.status_updates?.map((update) => (
           <Box sx={{ display: "flex" }}>
             <Box
               sx={{
@@ -185,15 +238,23 @@ const ProjectTimeline = () => {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ display: "flex", alignItems: "center" }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "#6b7280",
+                  }}
                 >
-                  <AccessTimeIcon sx={{ fontSize: "16px", mr: 0.5 }} />
-                  {update.date}
+                  <AccessTimeIcon
+                    sx={{ fontSize: "18px", mr: 0.5, mt: -0.25 }}
+                  />
+                  {update?.created_at}
                 </Typography>
-                <Box sx={{ mt: 0.5, fontSize: "18px" }}>{update.text}</Box>
+                <Box sx={{ mt: 0.5, fontSize: "18px" }}>
+                  {update?.description}
+                </Box>
                 <Box sx={{ mt: 1 }}>
                   <strong style={{ color: "#4b5563" }}>Posted by:</strong>{" "}
-                  {update.author}
+                  {update?.posted_by}
                 </Box>
               </Box>
             </Box>
