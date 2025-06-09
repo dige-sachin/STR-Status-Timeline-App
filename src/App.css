@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+/* styles.css */
+.no-red-placeholder input::placeholder,
+.no-red-placeholder textarea::placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+.MuiTypography-root {
+  color: #3b4251 !important;
+}

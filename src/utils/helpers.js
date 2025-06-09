@@ -16,3 +16,8 @@ export const formatDate = (isoDate) => {
   // Replace comma with " at" for the correct format
   return formattedDate.replace(",", " at");
 };
+
+export const loggingOut = () => {
+  localStorage.clear();
+  window.location.href = "/admin/login";
+};
