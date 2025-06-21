@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../src/theme/theme";
@@ -19,7 +20,6 @@ import AdminLogin from "./Pages/AdminLogin";
 import ViewProject from "./Pages/ViewProject";
 import api from "./hooks/Api";
 import { loggingOut } from "./utils/helpers";
-import { Navigate } from "react-router-dom";
 
 function AppContent() {
   const location = useLocation();
@@ -93,11 +93,21 @@ function AppContent() {
     <ThemeProvider theme={theme}>
       {isShowNavbar && <Header />}
       <Routes>
+        <Route path="/" element={<Navigate to="/admin/login" replace />} />
         <Route
           path="/projectTimeline/:projectHash"
           element={<ProjectTimelinePage />}
         />
-        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route
+          path="/admin/login"
+          element={
+            isAuthenticated() ? (
+              <Navigate to="/admin/viewProject" replace />
+            ) : (
+              <AdminLoginPage />
+            )
+          }
+        />
 
         <Route
           path="/admin/viewProject"
@@ -123,7 +133,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router basename="/str-timeline">
+    <Router>
       <ToastContainer
         position="top-right"
         autoClose={3000}
